@@ -1,69 +1,50 @@
-import kotlin.random.Random
+// Arquivo: Main.kt
 
 fun main() {
-    println("Escolha o estilo de rolagem de atributos:")
-    println("1 - Clássico (3d6 na ordem)")
-    println("2 - Aventureiro (3d6 e distribuir)")
-    println("3 - Heroico (4d6 descartando o menor e distribuir)")
-    val escolha = readLine()?.toIntOrNull() ?: 1
+    println("=== CRIADOR DE PERSONAGEM OLD DRAGON ===")
 
-    val atributos = when (escolha) {
-        2 -> distribuirValores(rolarClassico())
-        3 -> distribuirValores(List(6) { rolar4d6MenorDescarta() })
-        else -> rolarClassico() // Clássico é automático, na ordem
-    }
+    // 1. Gerar Atributos
+    val atributos = AtributoGenerator.gerarAtributos()
 
+    // 2. Escolher Raça
+    val raca = escolherRaca()
+
+    // 3. Escolher Classe
+    val classe = escolherClasse()
+
+    // 4. Criar o Personagem
     val personagem = Personagem(
-        nome = "Arthos",
-        raca = "Humano",
-        classe = "Guerreiro",
+        nome = "Aventureiro Teste",
+        raca = raca,
+        classe = classe,
         nivel = 1,
-        pontosDeVida = 12,
-        forca = atributos[0],
-        destreza = atributos[1],
-        constituicao = atributos[2],
-        inteligencia = atributos[3],
-        sabedoria = atributos[4],
-        carisma = atributos[5]
+        atributos = atributos
     )
 
+    // 5. Exibir a ficha completa
     personagem.exibirFicha()
 }
 
-// Rola dados
-fun rolarD6(qtd: Int): List<Int> = List(qtd) { Random.nextInt(1, 7) }
-fun rolar3d6(): Int = rolarD6(3).sum()
-fun rolar4d6MenorDescarta(): Int {
-    val dados = rolarD6(4)
-    return dados.sortedDescending().take(3).sum()
-}
-
-// Estilos de rolagem
-fun rolarClassico(): List<Int> = List(6) { rolar3d6() }
-
-// Função para distribuição manual
-fun distribuirValores(valores: List<Int>): List<Int> {
-    val atributosNomes = listOf("Força", "Destreza", "Constituição", "Inteligência", "Sabedoria", "Carisma")
-    val distribuido = MutableList(6) { 0 }
-    val valoresDisponiveis = valores.toMutableList()
-
-    println("Valores rolados: ${valoresDisponiveis.joinToString(", ")}")
-    for (i in atributosNomes.indices) {
-        println("Escolha o valor para ${atributosNomes[i]}:")
-        println("Valores disponíveis: ${valoresDisponiveis.joinToString(", ")}")
-        var escolhido: Int? = null
-        while (escolhido == null) {
-            val input = readLine()?.toIntOrNull()
-            if (input != null && valoresDisponiveis.contains(input)) {
-                escolhido = input
-                distribuido[i] = escolhido
-                valoresDisponiveis.remove(escolhido)
-            } else {
-                println("Valor inválido. Escolha novamente.")
-            }
-        }
+fun escolherRaca(): Raca {
+    println("\nEscolha a Raça do seu personagem:")
+    println("1 - Humano")
+    println("2 - Elfo")
+    println("3 - Anão")
+    return when (readLine()?.toIntOrNull()) {
+        2 -> Elfo
+        3 -> Anao
+        else -> Humano
     }
-    return distribuido
 }
 
-
+fun escolherClasse(): ClasseDePersonagem {
+    println("\nEscolha a Classe do seu personagem:")
+    println("1 - Guerreiro")
+    println("2 - Ladrão")
+    println("3 - Mago")
+    return when (readLine()?.toIntOrNull()) {
+        2 -> Ladrao
+        3 -> Mago
+        else -> Guerreiro
+    }
+}
