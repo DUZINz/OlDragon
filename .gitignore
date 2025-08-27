@@ -1,0 +1,15 @@
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# Maven
+target/
+
+# Arquivos compilados
+*.class
+*.jar
+*.war
+*.ear
+
+# Logs
+*.log
