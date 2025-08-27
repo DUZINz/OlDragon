@@ -1,15 +1,17 @@
-# IntelliJ IDEA
+
 .idea/
 *.iml
 
-# Maven
 target/
+classes/
+generated-sources/
 
 # Arquivos compilados
-*.class
-*.jar
-*.war
-*.ear
+#*.class
+#*.jar
+#*.war
+#*.ear
 
 # Logs
-*.log
+#*.log
+.gitignore/
