@@ -1,15 +1,16 @@
-*.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
+# Pastas de Build
 /build
-/captures
-.externalNativeBuild
-.cxx
+/.gradle
+
+# Configurações do IDE
+/.idea
+*.iml
+
+# Arquivos locais
 local.properties
+
+# Outros
+.DS_Store
+captures/
+*.apk
+*.aab
