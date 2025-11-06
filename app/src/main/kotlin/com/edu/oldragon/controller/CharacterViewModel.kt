@@ -3,21 +3,13 @@ package com.edu.oldragon.controller
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.room.Room
 import com.edu.oldragon.model.database.AppDatabase
 import com.edu.oldragon.model.database.PersonagemEntity
 import kotlinx.coroutines.launch
 
 class CharacterViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val db = Room.databaseBuilder(
-        application,
-        AppDatabase::class.java,
-        "ol_dragon_db"
-    ).allowMainThreadQueries() // <-- ADICIONE ESTA LINHA
-        .build()
-
-    private val dao = db.personagemDao()
+    private val personagemDao = AppDatabase.getInstance(application).personagemDao()
 
     fun salvarPersonagem(
         nome: String,
@@ -44,7 +36,14 @@ class CharacterViewModel(application: Application) : AndroidViewModel(applicatio
                 sabedoria = sabedoria,
                 carisma = carisma
             )
-            dao.inserir(personagem)
+            personagemDao.inserir(personagem)
+        }
+    }
+
+    fun listarPersonagens(onResult: (List<PersonagemEntity>) -> Unit) {
+        viewModelScope.launch {
+            val personagens = personagemDao.listarTodos()
+            onResult(personagens)
         }
     }
 }

@@ -1,4 +1,5 @@
 package com.edu.oldragon.view.ui.screens
+import android.widget.Toast
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -74,11 +75,16 @@ fun CharacterCreatorScreen() {
                             sabedoria = atributos[4],
                             carisma = atributos[5]
                         )
+                        nomePersonagem = ""
+                        selectedRace = "Humano"
+                        selectedClass = "Guerreiro"
+                        Toast.makeText(context, "Personagem salvo com sucesso!", Toast.LENGTH_SHORT).show()
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Criar e Salvar Personagem")
                 }
+
             }
         }
     }

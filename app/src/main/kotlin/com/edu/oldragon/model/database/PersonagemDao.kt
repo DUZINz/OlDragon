@@ -11,4 +11,7 @@ interface PersonagemDao {
 
     @Query("SELECT * FROM personagens")
     suspend fun listarTodos(): List<PersonagemEntity>
+
+    @Query("SELECT * FROM personagens WHERE id = :id")
+    suspend fun buscarPorId(id: Int): PersonagemEntity?
 }
