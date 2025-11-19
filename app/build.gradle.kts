@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.edu.olddragon"
+    namespace = "com.edu.oldragon"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.edu.olddragon"
+        applicationId = "com.edu.oldragon"
         minSdk = 24
         targetSdk = 36
         versionCode = 1

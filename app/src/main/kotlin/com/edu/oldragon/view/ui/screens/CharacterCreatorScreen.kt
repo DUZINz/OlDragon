@@ -1,6 +1,6 @@
 package com.edu.oldragon.view.ui.screens
-import android.widget.Toast
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
@@ -9,11 +9,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.edu.oldragon.controller.CharacterViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.edu.oldragon.model.Options
 import com.edu.oldragon.controller.AttributeGenerator
+import com.edu.oldragon.controller.CharacterViewModel
+import com.edu.oldragon.model.Options
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -23,23 +23,32 @@ fun CharacterCreatorScreen() {
         factory = ViewModelProvider.AndroidViewModelFactory(context.applicationContext as android.app.Application)
     )
 
+    // Estados do Formulário
     var nomePersonagem by remember { mutableStateOf("") }
     var selectedRace by remember { mutableStateOf("Humano") }
     var selectedClass by remember { mutableStateOf("Guerreiro") }
+
+    // Novo Estado: Método de Geração
+    val methods = listOf("Clássico", "Heróico", "Aventureiro")
+    var selectedMethod by remember { mutableStateOf("Clássico") }
+
+    // Estado para guardar os atributos gerados antes de salvar
+    var generatedAttributes by remember { mutableStateOf<IntArray?>(null) }
 
     val races = Options.races
     val classes = Options.classes
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Criação de Personagem") }) }
+        topBar = { TopAppBar(title = { Text("Novo Personagem Old Dragon") }) }
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            // 1. Nome
             item {
                 OutlinedTextField(
                     value = nomePersonagem,
@@ -49,6 +58,7 @@ fun CharacterCreatorScreen() {
                 )
             }
 
+            // 2. Seletores
             item {
                 Text("Raça", fontWeight = FontWeight.Bold)
                 DropdownSelector(races, selectedRace) { selectedRace = it }
@@ -60,9 +70,46 @@ fun CharacterCreatorScreen() {
             }
 
             item {
+                Text("Método de Atributos", fontWeight = FontWeight.Bold)
+                DropdownSelector(methods, selectedMethod) {
+                    selectedMethod = it
+                    generatedAttributes = null // Reseta se mudar o método
+                }
+            }
+
+            // 3. Área de Atributos
+            item {
                 Button(
                     onClick = {
-                        val atributos = AttributeGenerator.generateAttributes("Heróico")
+                        generatedAttributes = AttributeGenerator.generateAttributes(selectedMethod)
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(if (generatedAttributes == null) "Rolar Atributos" else "Rolar Novamente")
+                }
+
+                // Mostra os atributos se já foram gerados
+                generatedAttributes?.let { attrs ->
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text("Força: ${attrs[0]}  |  Inteligência: ${attrs[3]}")
+                            Text("Destreza: ${attrs[1]}  |  Sabedoria: ${attrs[4]}")
+                            Text("Constituição: ${attrs[2]}  |  Carisma: ${attrs[5]}")
+                        }
+                    }
+                }
+            }
+
+            // 4. Botão Salvar Final
+            item {
+                Button(
+                    enabled = nomePersonagem.isNotEmpty() && generatedAttributes != null,
+                    onClick = {
+                        val atributos = generatedAttributes!! // Já sabemos que não é null
                         viewModel.salvarPersonagem(
                             nome = nomePersonagem,
                             raca = selectedRace,
@@ -75,24 +122,25 @@ fun CharacterCreatorScreen() {
                             sabedoria = atributos[4],
                             carisma = atributos[5]
                         )
+
+                        Toast.makeText(context, "Personagem salvo!", Toast.LENGTH_SHORT).show()
+
+                        // Limpar campos
                         nomePersonagem = ""
-                        selectedRace = "Humano"
-                        selectedClass = "Guerreiro"
-                        Toast.makeText(context, "Personagem salvo com sucesso!", Toast.LENGTH_SHORT).show()
+                        generatedAttributes = null
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Criar e Salvar Personagem")
+                    Text("Salvar no Banco de Dados")
                 }
-
             }
         }
     }
 }
+
 @Composable
 fun DropdownSelector(options: List<String>, selected: String, onSelect: (String) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
-
     Box {
         OutlinedButton(
             onClick = { expanded = true },
@@ -100,7 +148,6 @@ fun DropdownSelector(options: List<String>, selected: String, onSelect: (String)
         ) {
             Text(selected)
         }
-
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false }
