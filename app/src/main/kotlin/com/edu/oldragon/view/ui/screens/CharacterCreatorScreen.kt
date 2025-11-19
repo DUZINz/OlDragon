@@ -134,6 +134,33 @@ fun CharacterCreatorScreen() {
                     Text("Salvar no Banco de Dados")
                 }
             }
+
+            // 5. Botão de Batalha (NOVO)
+            item {
+                Button(
+                    enabled = generatedAttributes != null, // Só habilita se tiver atributos
+                    onClick = {
+                        // Pega os atributos atuais gerados na tela
+                        val attrs = generatedAttributes!!
+
+                        val intent = android.content.Intent(context, com.edu.oldragon.service.BattleService::class.java).apply {
+                            putExtra("NOME", nomePersonagem.ifEmpty { "Aventureiro" })
+                            putExtra("STR", attrs[0])
+                            putExtra("DEX", attrs[1])
+                            putExtra("CON", attrs[2])
+                        }
+
+                        // Inicia o serviço
+                        context.startForegroundService(intent)
+
+                        Toast.makeText(context, "Batalha iniciada em segundo plano!", Toast.LENGTH_SHORT).show()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = androidx.compose.ui.graphics.Color.Red),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Simular Batalha (Background)")
+                }
+            }
         }
     }
 }
