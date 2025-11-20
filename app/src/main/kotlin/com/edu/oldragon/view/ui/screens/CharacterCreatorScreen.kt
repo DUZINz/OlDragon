@@ -14,6 +14,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.edu.oldragon.controller.AttributeGenerator
 import com.edu.oldragon.controller.CharacterViewModel
 import com.edu.oldragon.model.Options
+import androidx.core.content.ContextCompat
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -151,7 +152,7 @@ fun CharacterCreatorScreen() {
                         }
 
                         // Inicia o serviço
-                        context.startForegroundService(intent)
+                        ContextCompat.startForegroundService(context, intent)
 
                         Toast.makeText(context, "Batalha iniciada em segundo plano!", Toast.LENGTH_SHORT).show()
                     },
